@@ -1,0 +1,28 @@
+{% load static %}
+<html>
+<head>
+</head>
+
+<body>
+	{% for spec in specs %}
+		<div id="{{ spec.name }}">
+			<h1>{{ spec.name }}</h1>
+			<div id="{{ spec.name }}_answers">
+			{% for question in spec.get_questions %}
+				<div id="{{ question }}">
+					{{ question }}&nbsp;
+					<form method="POST">
+						<input type="hidden" name="question_id" value="{{ question.id }}"/>
+						<input type="submit" name="edit" value="Edit"/>
+					</form>
+					{% for ans in question.get_answers %}
+						{{ ans }}
+					{% endfor %}
+				</div>
+			{% endfor %}
+			</div>
+		</div>
+	{% endfor %}
+</body>
+
+</html>
