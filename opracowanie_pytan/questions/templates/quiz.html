@@ -124,9 +124,15 @@ function hide_all(){
 }
 
 function random_question(){
-	alert(Math.floor((Math.random() * 10) + 1));
-	var all_questions = document.getElementsByClassName("question");
-	alert(all_questions[0].id)
+	var all_questions = get_all_questions();
+	var random_question = Math.floor(Math.random() * all_questions.length);
+	for (var i=0; i < all_questions.length; i++) {
+		if(i != random_question){
+			all_questions[i].style.display = 'none';
+		} else {
+			all_questions[i].style.display = '';
+		}
+	}
 }
 </script>
 {% endblock %}
@@ -139,6 +145,8 @@ function random_question(){
 	<input onclick="hide_all()" value="Ukryj wszystko" type="button">
 	&nbsp;
 	<input onclick="random_question()" value="Losuj pytanie" type="button">
+	&nbsp;
+	<input onclick="location.reload(true);" value="Reset" type="button">
 </div>
 <div id="empty_div"></div>
 {% for question in quiz.get_questions %}
@@ -185,4 +193,7 @@ function random_question(){
 
 </div>
 
+<script type="application/javascript">
+	hide_all();
+</script>
 {% endblock %}
