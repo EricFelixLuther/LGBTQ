@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static templatetags %}
+{% block extra_css %}
+<style>
+#main {
+	margin-right: auto;
+	margin-left: auto;
+	width: 90%;
+}
+
+.question {
+	border: 1px solid #777777;
+	background-color: #ddddff;
+	padding: 2px;
+	margin-bottom: 5px;
+	width: 100%;
+	border-radius: 5px;"
+}
+
+.hint {
+	border: 1px solid #777777;
+	background-color: #ddddff;
+	padding: 2px;
+	margin: 10;
+	width: 95%;
+	float: center;
+	border-radius: 5px;"
+}
+
+.answer {
+	border: 1px solid #777777;
+	background-color: #ddddff;
+	padding: 2px;
+	margin: 10;
+	width: 95%;
+	float: center;
+	border-radius: 5px;"
+}
+
+#quiz_panel {
+	height: 120px;
+	width: 89%;
+	position: fixed;
+	border: 1px solid #777777;
+	background-color: #ffbbbb;
+	padding: 2px;
+	margin: 0px;
+	border-radius: 5px;"
+}
+
+#empty_div {
+	height: 140px;
+}
+
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script type="application/javascript">
+function show_hint(id){
+	var all_show_hint_buttons = document.getElementsByClassName("show_hint_button");
+	for (var i=0; i < all_questions.length; i++) {
+		all_hints[i].style.visibility = 'hidden';
+		all_show_hint_buttons[i].style.visibility = 'hidden';
+	}
+	document.getElementById("hint_" + id).style.visibility = "visible";
+	document.getElementById("hide_hint_button_" + id).style.visibility = "visible";
+}
+function show_answer(id){
+	var all = document.getElementsByClassName("answer");
+	for (var i=0; i < all.length; i++) {
+      all[i].style.visibility = 'hidden';
+	}
+	document.getElementById("answer_" + id).style.visibility = "visible";
+}
+
+function hide_all(){
+	for (var i=0; i < all_questions.length; i++) {
+		all_hints[i].style.visibility = 'hidden';
+		all_answers[i].style.visibility = 'hidden';
+		all_show_hint_buttons[i].style.visibility = 'visible';
+		all_hide_hint_buttons[i].style.visibility = 'hidden';
+		all_show_answer_buttons[i].style.visibility = 'visible';
+		all_hide_answer_buttons[i].style.visibility = 'hidden';
+		}
+}
+
+function random_question(){
+	alert(Math.floor((Math.random() * 10) + 1););
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div id="main">
+<div id="quiz_panel">
+	<h1>{{ quiz.name }}</h1>{{ quiz.name }}
+	<input onclick="hide_all()" value="Ukryj wszystko" type="button">
+	&nbsp;
+	<input onclick="random_question()" value="Losuj pytanie" type="button">
+</div>
+<div id="empty_div"></div>
+{% for question in quiz.get_questions %}
+
+	<div id="question_{{ question.id }}" class="question">
+		{{ question.question }}<br /><br />
+	<input id="show_hint_button_{{ question.id }}" class="show_hint_button" onclick="show_hint({{ question.id }})" value="Pokaż wskazówkę" type="button" />
+	<input id="hide_hint_button_{{ question.id }}" class="hide_hint_button" onclick="hide_hint({{ question.id }})" value="Ukryj wskazówkę" type="button" />
+	<input id="show_answer_button_{{ question.id }}" class="show_answer_button" onclick="show_answer({{ question.id }})" value="Pokaz odpowiedz" type="button" />
+	<input id="hide_answer_button_{{ question.id }}" class="hide_answer_button" onclick="hide_answer({{ question.id }})" value="Ukryj odpowiedź" type="button" />
+	<div class="hint" id="hint_{{ question.id }}">{{ question.hint }}</div>
+	<div class="answer" id="answer_{{ question.id }}">
+		{% if question.answer_type == "Plain text" %}
+			{{ question.answer }}
+		{% elif question.answer_type == "List" %}
+			<ul>
+			{% for each in question.answer_type|format_into_list %}
+				<li>{{ each }}</li>
+			{% endfor %}
+			</ul>
+		{% elif question.answer_type == "Steps" %}
+			<ol>
+			{% for each in question.answer_type|format_into_list %}
+				<li>{{ each }}</li>
+			{% endfor %}
+			</ol>
+		{% elif question.answer_type == "Table" %}
+			<table>
+				{% for row in question.answer_type|format_into_table %}
+					<tr>
+						{% for cell in row %}
+							<td>
+							</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+	</div>
+	</div>
+	
+{% endfor %}
+
+</div>
+
+<script type="application/javascript">
+	var all_questions = document.getElementsByClassName("question");
+	var all_show_hint_buttons = document.getElementsByClassName("show_hint_button");
+	var all_hide_hint_buttons = document.getElementsByClassName("hide_hint_button");
+	var all_show_answer_buttons = document.getElementsByClassName("show_answer_button");
+	var all_hide_answer_buttons = document.getElementsByClassName("hide_answer_button");
+	var all_hints = document.getElementsByClassName("hint");
+	var all_answers = document.getElementsByClassName("answer");
+	hide_all();
+</script>
+{% endblock %}

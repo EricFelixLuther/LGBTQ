@@ -6,31 +6,24 @@ Created on May 11, 2016
 from django.db import models
 
 
-class Kierunek(models.Model):
+class Quiz_Set(models.Model):
     name = models.CharField(max_length=64, null=False, blank=False)
 
+    @property
     def get_questions(self):
-        return Pytanie.objects.filter(spec=self)
+        return Question.objects.filter(quiz_set=self)
 
     def __unicode__(self):
         return self.name
 
 
-class Pytanie(models.Model):
-    name = models.CharField(max_length=256, null=False, blank=False)
-    spec = models.ForeignKey(Kierunek, null=False, blank=False, related_name="spec")
-    reserved = models.CharField(max_length=64, null=True, blank=True)
-
-    def get_answers(self):
-        return Odpowiedz.objects.filter(question=self)
-
-    def __unicode__(self):
-        return self.name
-
-class Odpowiedz(models.Model):
-    text = models.CharField(max_length=2048, null=True, blank=True)
-    question = models.ForeignKey(Pytanie, null=False, blank=False, related_name="question")
-    author = models.CharField(max_length=32, null=False, blank=False)
+class Question(models.Model):
+    ANSWER_TYPES = (("Plain text", "Plain text"), ("List", "List"), ("Steps", "Steps"), ("Table", "Table"))
+    question = models.CharField(max_length=256)
+    hint = models.CharField(max_length=128, blank=True)
+    answer = models.TextField()
+    quiz_set = models.ForeignKey(Quiz_Set)
+    answer_type=models.CharField(max_length=12, choices=ANSWER_TYPES)
 
     def __unicode__(self):
-        return self.text
+        return self.question

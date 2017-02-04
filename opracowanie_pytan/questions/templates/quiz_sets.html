@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 id="title">Questions and Answers Learning Tool</h1>
+<a href="{% url "create_quiz" %}">Create new quiz</a><br />
+<a href="{% url "new_question" %}">Create new question</a>
+<h2>Available quiz sets:</h2>
+<table>
+{% for quiz in object_list %}
+<tr>
+<td>
+	<a href="{% url "quiz" quiz_id=quiz.id %}">{{ quiz }}</a>
+</td>
+<td>
+	<a href="{% url "edit_quiz" quiz_id=quiz.id %}">Edit</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

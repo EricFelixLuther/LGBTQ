@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post">
+	{% csrf_token %}
+	<table>
+    {{ form.as_table }}
+    </table>
+    <input name="save" type="submit" value="Save" />
+    <input name="another" type="submit" value="Save and add another" />
+</form>
+
+<div>
+<h2>Instructions:</h2>
+<p>To create a list of elements, input every next list item between symbols: <br />
+{{ cell_parse_symbol }}</p>
+<p>To create a table, you need to input each separate cell between symbols:<br />
+{{ cell_parse_symbol }}<br />
+and then every separate row between symbols:<br />
+{{ row_parse_symbol }}
+</p>
+</div>
+{% endblock %}

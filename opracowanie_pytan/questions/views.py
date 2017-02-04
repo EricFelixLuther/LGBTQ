@@ -7,53 +7,77 @@ Created on Apr 20, 2016
 
 from django.views.generic.base import View
 from django.shortcuts import render, redirect
-from opracowanie_pytan.questions.models import Kierunek
+from opracowanie_pytan.questions.models import Quiz_Set, Question
+from opracowanie_pytan.questions.forms import Quiz_Set_Form, Question_Form
+from opracowanie_pytan.questions.templatetags.templatetags import CELL_PARSE_SYMBOL,\
+    ROW_PARSE_SYMBOL
+from django.core.urlresolvers import reverse
+
+class Quiz_Set_Create_View(View):
+    template_name = "quiz_set_create_form.html"
+    def get(self, request, quiz_id=None, *args, **kwargs):
+        if quiz_id:
+            form = Quiz_Set_Form(instance=Quiz_Set.objects.get(pk=quiz_id))
+        else:
+            form = Quiz_Set_Form()
+        return render(request, self.template_name,
+                      {"form": form})
+
+    def post(self, request, quiz_id=None, *args, **kwargs):
+        if quiz_id:
+            form = Quiz_Set_Form(instance=Quiz_Set.objects.get(pk=quiz_id),
+                                            data=request.POST)
+        else:
+            form = Quiz_Set_Form(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        else:
+            return render(request, self.template_name,
+                          {"form": form})
 
 
-class View_All(View):
-    template = "view_all.html"
-
-    def get(self, request, *args, **kwargs):
-        specs = Kierunek.objects.all()
-        return render(request,
-                      self.template,
-                      {"specs": specs}
-                      )
-
-    def post(self, request, *args, **kwargs):
-        return redirect("edit", question_id=request.POST.get("question_id"))
-        #return redirect('/some/url/')
-
-    def dispatch(self, *args, **kwargs):
-        return super(View_All, self).dispatch(*args, **kwargs)
+class Quiz_View(View):
+    template_name = "quiz.html"
+    def get(self, request, quiz_id, *args, **kwargs):
+        quiz = Quiz_Set.objects.get(pk=quiz_id)
+        return render(request, self.template_name,
+                      {"quiz": quiz})
 
 
-class Edit(View):
+class Edit_Question(View):
     template = "edit.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, question_id=None, *args, **kwargs):
+        if question_id == None:
+            form = Question_Form()
+        else:
+            form = Question_Form(instance=Question.objects.get(pk=question_id))
         return render(request,
                       self.template,
-                      {"key": "val"})
+                      {"form": form,
+                       "cell_parse": CELL_PARSE_SYMBOL,
+                       "row_parse": ROW_PARSE_SYMBOL})
 
-    def post(self, request, *args, **kwargs):
-        pass
+    def post(self, request, question_id=None, *args, **kwargs):
+        if question_id == None:
+            form = Question_Form(request.POST)
+        else:
+            form = Question_Form(instance=Question.objects.get(pk=question_id),
+                                 data=request.POST)
 
-    def dispatch(self, *args, **kwargs):
-        return super(Edit, self).dispatch(*args, **kwargs)
+        if form.is_valid():
+            obj = form.save()
+            if request.POST.get("save"):
+                return redirect(reverse("quiz", kwargs={"quiz_id": obj.quiz_set.id}))
+            elif request.POST.get("another"):
+                return redirect(reverse("new_question"))
 
-
-
-class TemplateView(View):
-    template = "template.html"
-
-    def get(self, request, *args, **kwargs):
         return render(request,
                       self.template,
-                      {"key": "val"})
-
-    def post(self, request, *args, **kwargs):
-        pass
+                      {"form": form,
+                       "cell_parse": CELL_PARSE_SYMBOL,
+                       "row_parse": ROW_PARSE_SYMBOL})
 
     def dispatch(self, *args, **kwargs):
-        return super(TemplateView, self).dispatch(*args, **kwargs)
+        return super(Edit_Question, self).dispatch(*args, **kwargs)
