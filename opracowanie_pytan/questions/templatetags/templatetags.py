@@ -7,8 +7,8 @@ from django import template
 
 register = template.Library()
 
-CELL_PARSE_SYMBOL = "[%]"
-ROW_PARSE_SYMBOL = "[&]"
+CELL_PARSE_SYMBOL = "[%TD]"
+ROW_PARSE_SYMBOL = "[%TR]"
 
 @register.filter
 def format_into_list(value):

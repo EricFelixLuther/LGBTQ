@@ -5,7 +5,7 @@ Created on May 11, 2016
 @author: root
 '''
 from django.core.management.base import BaseCommand, CommandError
-from opracowanie_pytan.questions.models import Kierunek, Pytanie
+from opracowanie_pytan.questions.models import Quiz_Set, Question
 
 
 class Command(BaseCommand):
@@ -200,9 +200,11 @@ class Command(BaseCommand):
                 ]},
         ]
 
-        for spec in everything:
-            kierunek = Kierunek.objects.create(name=spec.keys()[0])
+        for spec in everything.keys():
+            kierunek = Quiz_Set.objects.create(name=spec.keys()[0])
             for question in spec[spec.keys()[0]]:
-                Pytanie.objects.create(name=question,
-                                       spec=kierunek,
-                                       reserved=None)
+                Question.objects.create(question=question,
+                                        quiz_set=kierunek,
+                                        hint='',
+                                        answer='',
+                                        answer_type="Plain text")
